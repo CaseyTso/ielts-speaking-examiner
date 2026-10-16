@@ -1,4 +1,58 @@
 export const STORAGE_KEY_GEMINI_API_KEY = 'gemini_api_key';
+export const STORAGE_KEY_PROGRESS_DIGEST = 'progress_digest';
+export const STORAGE_KEY_LAST_SESSION_TRANSCRIPT = 'last_session_transcript';
+
+/**
+ * Retrieves the last stored session transcript from localStorage.
+ */
+export function getLastSessionTranscript(): unknown | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_LAST_SESSION_TRANSCRIPT);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (err) {
+    console.warn('Failed to parse last_session_transcript from localStorage:', err);
+    return null;
+  }
+}
+
+/**
+ * Saves a session transcript to localStorage.
+ */
+export function saveLastSessionTranscript(record: unknown): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY_LAST_SESSION_TRANSCRIPT, JSON.stringify(record, null, 2));
+  } catch (err) {
+    console.error('Failed to save last_session_transcript to localStorage:', err);
+  }
+}
+
+/**
+ * Reads the progress digest from localStorage.
+ */
+export function getStoredProgressDigest(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const val = localStorage.getItem(STORAGE_KEY_PROGRESS_DIGEST);
+    return val && val.trim() ? val.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Saves a progress digest to localStorage (used for testing or S3).
+ */
+export function setStoredProgressDigest(digest: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY_PROGRESS_DIGEST, digest.trim());
+  } catch (e) {
+    console.error('Failed to save progress_digest to localStorage', e);
+  }
+}
 
 /**
  * Reads the stored Gemini API key from localStorage.

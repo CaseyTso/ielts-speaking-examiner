@@ -50,6 +50,10 @@ export class LiveClient {
     };
   }
 
+  public setSystemInstruction(instruction: string): void {
+    this.config.systemInstruction = instruction;
+  }
+
   public getState(): LiveConnectionState {
     return this.state;
   }
