@@ -401,6 +401,12 @@ export class LiveClient {
       clearTimeout(this.connectTimeoutId);
       this.connectTimeoutId = null;
     }
+    if (this.connectPromiseReject) {
+      const reject = this.connectPromiseReject;
+      this.connectPromiseReject = null;
+      this.connectPromiseResolve = null;
+      reject(new Error('session closed'));
+    }
     if (this.ws) {
       try {
         this.ws.onopen = null;

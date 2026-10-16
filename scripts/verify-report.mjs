@@ -305,7 +305,8 @@ async function runVerification() {
   console.log('[STEP 3] Validating Report Output against Consensuses...');
 
   // Check no scores (P1-8: CJK compatible regex without outer word boundaries)
-  const scoreRegex = /(?:\bBand\s*[4-9](?:\.[05])?|\bScore[：:]\s*\d|得分[：:]\s*\d|评级[：:]\s*\d|(?:预计|预估|估计)\s*[4-9](?:\.[05])?|[4-9](?:\.[05])?\s*分(?!钟|秒))/i;
+  const scoreRegex =
+    /(?:\bBand\s*[4-9](?:\.[05])?|\bScore[：:]\s*\d|得分[：:]\s*\d|评级[：:]\s*\d|(?:总分|总评|综合)[：:]\s*\d|(?:预计|预估|估计)\s*[4-9](?:\.[05])?\s*(?:分(?!钟|秒)|\/9|Band)|[4-9](?:\.[05])?\s*分(?!钟|秒))/i;
   const scoreMatch = report.markdown.match(scoreRegex);
   if (scoreMatch) {
     console.error(`[VIOLATION] Found forbidden score reference in report: "${scoreMatch[0]}"`);

@@ -12,10 +12,12 @@ import {
   ExamPartRecord,
   ExamSessionRecord,
   EXAM_DURATIONS,
-  saveLastSessionTranscript,
-  getStoredProgressDigest,
   formatSeconds,
 } from '../lib/exam-flow';
+import {
+  saveLastSessionTranscript,
+  getStoredProgressDigest,
+} from '../utils/storage';
 import { ExamPaper, getRandomExamPaper } from '../data/questionBank';
 import {
   buildPart1SystemInstruction,

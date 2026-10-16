@@ -99,10 +99,9 @@ export class AudioPlaybackStreamer {
       sourceNode.start(startTime);
       this.nextStartTime = startTime + audioBuffer.duration;
 
-      // Only push to activeSources if context is running to prevent leakage on suspended contexts
-      if (ctx.state === 'running') {
-        this.activeSources.push(sourceNode);
-      }
+      // Always push to activeSources so scheduled audio can be interrupted even if context is suspended.
+      // Cleanup is handled by onended (splice) and interrupt()/close() (stop + clear).
+      this.activeSources.push(sourceNode);
 
       if (!this.isPlaying) {
         this.isPlaying = true;

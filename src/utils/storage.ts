@@ -1,3 +1,5 @@
+import type { ExamSessionRecord } from '../lib/exam-flow';
+
 export const STORAGE_KEY_GEMINI_API_KEY = 'gemini_api_key';
 export const STORAGE_KEY_PROGRESS_DIGEST = 'progress_digest';
 export const STORAGE_KEY_LAST_SESSION_TRANSCRIPT = 'last_session_transcript';
@@ -84,12 +86,12 @@ export function clearAllPracticeReports(): void {
 /**
  * Retrieves the last stored session transcript from localStorage.
  */
-export function getLastSessionTranscript(): unknown | null {
+export function getLastSessionTranscript(): ExamSessionRecord | null {
   if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY_LAST_SESSION_TRANSCRIPT);
     if (!raw) return null;
-    return JSON.parse(raw);
+    return JSON.parse(raw) as ExamSessionRecord;
   } catch (err) {
     console.warn('Failed to parse last_session_transcript from localStorage:', err);
     return null;
@@ -99,7 +101,7 @@ export function getLastSessionTranscript(): unknown | null {
 /**
  * Saves a session transcript to localStorage.
  */
-export function saveLastSessionTranscript(record: unknown): void {
+export function saveLastSessionTranscript(record: ExamSessionRecord): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY_LAST_SESSION_TRANSCRIPT, JSON.stringify(record, null, 2));

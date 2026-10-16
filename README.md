@@ -63,8 +63,8 @@
 
 ```bash
 # 1. 克隆代码仓库
-git clone https://github.com/your-username/IELTS-coach.git
-cd IELTS-coach
+git clone https://github.com/CaseyTso/ielts-speaking-examiner.git
+cd ielts-speaking-examiner
 
 # 2. 安装依赖
 npm install

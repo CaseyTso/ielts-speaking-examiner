@@ -23,10 +23,10 @@ import {
 import {
   getStoredApiKey,
   savePracticeReport,
+  getLastSessionTranscript,
   PracticeReportRecord,
 } from '../utils/storage';
 import { useExamFlow } from '../hooks/useExamFlow';
-import { getLastSessionTranscript } from '../lib/exam-flow';
 import { generatePracticeReport, downloadMarkdownReport } from '../lib/report';
 import { updateProgressDigest } from '../lib/digest';
 import { MarkdownView } from '../components/MarkdownView';
