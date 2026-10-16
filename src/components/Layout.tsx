@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, Sparkles } from 'lucide-react';
+import { Settings, Sparkles, History } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,6 +9,7 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const isSettings = location.pathname === '/settings';
+  const isHistory = location.pathname === '/history';
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex justify-center selection:bg-indigo-500/30 selection:text-indigo-200">
@@ -27,16 +28,29 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </Link>
 
-          {!isSettings && (
-            <Link
-              to="/settings"
-              className="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
-              title="设置 / BYOK"
-              aria-label="设置页面"
-            >
-              <Settings className="w-5 h-5" />
-            </Link>
-          )}
+          <div className="flex items-center gap-1">
+            {!isHistory && (
+              <Link
+                to="/history"
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+                title="练习报告历史记录"
+                aria-label="历史记录"
+              >
+                <History className="w-5 h-5" />
+              </Link>
+            )}
+
+            {!isSettings && (
+              <Link
+                to="/settings"
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+                title="设置 / BYOK"
+                aria-label="设置页面"
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
+            )}
+          </div>
         </header>
 
         {/* Main Content Area */}

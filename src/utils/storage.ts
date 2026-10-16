@@ -1,6 +1,85 @@
 export const STORAGE_KEY_GEMINI_API_KEY = 'gemini_api_key';
 export const STORAGE_KEY_PROGRESS_DIGEST = 'progress_digest';
 export const STORAGE_KEY_LAST_SESSION_TRANSCRIPT = 'last_session_transcript';
+export const STORAGE_KEY_PRACTICE_REPORTS = 'practice_reports';
+
+export interface PracticeReportRecord {
+  id: string;
+  sessionId: string;
+  createdAt: number;
+  topicSummary: string;
+  markdown: string;
+  modelUsed?: string;
+}
+
+/**
+ * Retrieves all saved practice reports from localStorage, ordered newest first.
+ */
+export function getPracticeReports(): PracticeReportRecord[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PRACTICE_REPORTS);
+    if (!raw) return [];
+    const list = JSON.parse(raw) as PracticeReportRecord[];
+    if (!Array.isArray(list)) return [];
+    return list.sort((a, b) => b.createdAt - a.createdAt);
+  } catch (err) {
+    console.warn('Failed to parse practice_reports from localStorage:', err);
+    return [];
+  }
+}
+
+/**
+ * Retrieves a single practice report by its unique ID.
+ */
+export function getPracticeReportById(id: string): PracticeReportRecord | null {
+  const reports = getPracticeReports();
+  return reports.find((r) => r.id === id) || null;
+}
+
+/**
+ * Saves or updates a practice report in localStorage.
+ */
+export function savePracticeReport(report: PracticeReportRecord): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const reports = getPracticeReports();
+    const existingIndex = reports.findIndex((r) => r.id === report.id);
+    if (existingIndex >= 0) {
+      reports[existingIndex] = report;
+    } else {
+      reports.unshift(report);
+    }
+    localStorage.setItem(STORAGE_KEY_PRACTICE_REPORTS, JSON.stringify(reports, null, 2));
+  } catch (err) {
+    console.error('Failed to save practice report to localStorage:', err);
+  }
+}
+
+/**
+ * Deletes a practice report from localStorage by ID.
+ */
+export function deletePracticeReport(id: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const reports = getPracticeReports().filter((r) => r.id !== id);
+    localStorage.setItem(STORAGE_KEY_PRACTICE_REPORTS, JSON.stringify(reports, null, 2));
+  } catch (err) {
+    console.error('Failed to delete practice report from localStorage:', err);
+  }
+}
+
+/**
+ * Clears all practice reports from localStorage.
+ */
+export function clearAllPracticeReports(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(STORAGE_KEY_PRACTICE_REPORTS);
+  } catch (err) {
+    console.error('Failed to clear practice reports from localStorage:', err);
+  }
+}
 
 /**
  * Retrieves the last stored session transcript from localStorage.

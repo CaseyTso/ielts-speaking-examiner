@@ -16,14 +16,32 @@ import {
   FileText,
   HelpCircle,
   Award,
+  Download,
+  History,
+  Check,
 } from 'lucide-react';
-import { getStoredApiKey } from '../utils/storage';
+import {
+  getStoredApiKey,
+  savePracticeReport,
+  PracticeReportRecord,
+} from '../utils/storage';
 import { useExamFlow } from '../hooks/useExamFlow';
+import { getLastSessionTranscript } from '../lib/exam-flow';
+import { generatePracticeReport, downloadMarkdownReport } from '../lib/report';
+import { updateProgressDigest } from '../lib/digest';
+import { MarkdownView } from '../components/MarkdownView';
 
 export const ExamPage: React.FC = () => {
   const navigate = useNavigate();
   const [apiKey, setApiKey] = useState<string>('');
   const [showAbortConfirm, setShowAbortConfirm] = useState(false);
+
+  // S3 Report & Digest states
+  const [currentReport, setCurrentReport] = useState<PracticeReportRecord | null>(null);
+  const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
+  const [generatingModel, setGeneratingModel] = useState<string>('');
+  const [reportError, setReportError] = useState<string | null>(null);
+  const [digestUpdated, setDigestUpdated] = useState<boolean>(false);
 
   const {
     examState,
@@ -71,6 +89,54 @@ export const ExamPage: React.FC = () => {
   const handleAbort = () => {
     abortExam();
     setShowAbortConfirm(false);
+  };
+
+  const handleResetToIdle = () => {
+    setCurrentReport(null);
+    setIsGeneratingReport(false);
+    setGeneratingModel('');
+    setReportError(null);
+    setDigestUpdated(false);
+    resetToIdle();
+  };
+
+  const handleGenerateReport = async () => {
+    if (!apiKey.trim()) {
+      setReportError('请先在设置中配置 Gemini API Key');
+      return;
+    }
+
+    const sessionRecord = getLastSessionTranscript();
+    if (!sessionRecord || !sessionRecord.parts || sessionRecord.parts.length === 0) {
+      setReportError('未找到本场有效转录数据，无法生成报告');
+      return;
+    }
+
+    setIsGeneratingReport(true);
+    setReportError(null);
+    setDigestUpdated(false);
+
+    try {
+      const report = await generatePracticeReport(sessionRecord, apiKey, {
+        onModelAttempt: (model) => setGeneratingModel(model),
+      });
+
+      savePracticeReport(report);
+      setCurrentReport(report);
+
+      // Automatically update progress digest in sequence
+      try {
+        await updateProgressDigest(apiKey, [report]);
+        setDigestUpdated(true);
+      } catch (digestErr) {
+        console.warn('Progress digest auto-update warning:', digestErr);
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setReportError(message);
+    } finally {
+      setIsGeneratingReport(false);
+    }
   };
 
   // =========================================================================
@@ -212,20 +278,21 @@ export const ExamPage: React.FC = () => {
   // =========================================================================
   if (examState === 'FINISHED') {
     return (
-      <div className="flex-1 flex flex-col justify-between space-y-6">
-        <div className="space-y-5">
-          <div className="text-center space-y-2 pt-2">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
-              <Award className="w-6 h-6" />
+      <div className="flex-1 flex flex-col justify-between space-y-5">
+        <div className="space-y-4">
+          {/* Header Banner */}
+          <div className="text-center space-y-1.5 pt-1">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+              <Award className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-bold text-white">模考已顺利完成！</h2>
             <p className="text-xs text-slate-400 max-w-xs mx-auto">
-              恭喜您完成了雅思口语完整三部分的模拟考试。考官已记录您的全场回答。
+              恭喜您完成了雅思口语完整三部分的模拟考试。考官已记录您的全场真实回答。
             </p>
           </div>
 
           {/* Parts Summary Cards */}
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">本场各部分记录</h3>
             <div className="space-y-2">
               {completedParts.map((p) => (
@@ -242,44 +309,157 @@ export const ExamPage: React.FC = () => {
                     </span>
                   </div>
                   <div className="text-[11px] text-slate-400 flex items-center justify-between">
-                    <span>
+                    <span className="truncate max-w-[240px]">
                       {p.part === 1 && `话题: ${p.topicInfo.topics?.join('、')}`}
                       {p.part === 2 && `题卡: ${p.topicInfo.cueCard?.title}`}
                       {p.part === 3 && `主题: ${p.topicInfo.part3Theme} 深度讨论`}
                     </span>
-                    <span className="text-slate-500">{p.turns.length} 轮互动</span>
+                    <span className="text-slate-500 shrink-0">{p.turns.length} 轮互动</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Persistence Notice */}
-          <div className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/60 text-xs space-y-1.5">
-            <div className="flex items-center gap-2 text-indigo-400 font-medium">
-              <CheckCircle2 className="w-4 h-4" />
-              <span>全场转录已安全归档</span>
+          {/* ========================================================== */}
+          {/* S3 REPORT SECTION: GENERATION OR DISPLAY */}
+          {/* ========================================================== */}
+          {currentReport ? (
+            /* Report Rendered View */
+            <div className="space-y-3 pt-1">
+              <div className="p-3.5 rounded-xl bg-gradient-to-br from-indigo-950/60 to-slate-900 border border-indigo-500/40 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-300">
+                    <Sparkles className="w-4 h-4 text-indigo-400" />
+                    <span>雅思练习报告 (Practice Report) 已生成</span>
+                  </div>
+                  {currentReport.modelUsed && (
+                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
+                      {currentReport.modelUsed}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-slate-300 truncate font-medium">
+                    {currentReport.topicSummary}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => downloadMarkdownReport(currentReport)}
+                    className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium flex items-center gap-1 shrink-0 transition-colors shadow-sm"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>下载 .md</span>
+                  </button>
+                </div>
+
+                {digestUpdated && (
+                  <div className="pt-1 flex items-center gap-1.5 text-[11px] text-emerald-400 border-t border-indigo-500/20">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>进步摘要 (Progress Digest) 已同步更新，供下一场练习注入</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Rendered Markdown Report Container */}
+              <div className="max-h-[380px] overflow-y-auto p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-inner">
+                <MarkdownView content={currentReport.markdown} />
+              </div>
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed">
-              完整对话转录已按 Part 结构保存至本地存储（<code className="text-slate-300">last_session_transcript</code>），阶段 S3 将以此生成雅思四项评分标准（流利连贯、词汇多样、语法广度准确度、发音）练习报告。
-            </p>
-          </div>
+          ) : (
+            /* Report Generation Action Card */
+            <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-950/40 to-slate-900/80 border border-indigo-500/30 space-y-3 shadow-md">
+              <div className="flex items-center justify-between">
+                <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-300">
+                  <Sparkles className="w-4 h-4 text-indigo-400" />
+                  <span>阶段 S3 · 雅思官方四维度练习报告</span>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">
+                  不打分 · 纯反馈
+                </span>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed">
+                基于全场各 Part 真实转录，生成逐题改写诊断与流利连贯、词汇、语法、发音跨维度系统总结，并同步更新跨场次进步摘要。
+              </p>
+
+              {reportError && (
+                <div className="p-2.5 rounded-lg bg-rose-950/60 border border-rose-500/40 text-rose-200 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                  <p className="text-[11px] text-rose-200/90">{reportError}</p>
+                </div>
+              )}
+
+              <button
+                type="button"
+                disabled={isGeneratingReport || !hasApiKey}
+                onClick={handleGenerateReport}
+                className={`w-full py-3 px-4 rounded-xl font-medium text-xs flex items-center justify-center gap-2 transition-all ${
+                  isGeneratingReport
+                    ? 'bg-indigo-900/60 text-indigo-300 border border-indigo-500/30 cursor-wait'
+                    : hasApiKey
+                    ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 cursor-pointer active:scale-[0.99]'
+                    : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
+                }`}
+              >
+                {isGeneratingReport ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-indigo-400" />
+                    <span>
+                      {generatingModel
+                        ? `正在调用 ${generatingModel} 生成练习报告...`
+                        : '正在生成雅思四维度练习报告...'}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 fill-current" />
+                    <span>立即生成本场练习报告</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Actions */}
-        <div className="space-y-2 pt-3">
-          <button
-            type="button"
-            onClick={resetToIdle}
-            className="w-full py-3 px-4 rounded-xl font-medium text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/30"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>再练一场</span>
-          </button>
+        {/* Actions Area */}
+        <div className="space-y-2 pt-2 border-t border-slate-800">
+          {currentReport && (
+            <button
+              type="button"
+              onClick={() => downloadMarkdownReport(currentReport)}
+              className="w-full py-2.5 px-4 rounded-xl font-medium text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>下载本场 Markdown 练习报告</span>
+            </button>
+          )}
+
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => navigate('/history')}
+              className="py-2.5 px-3 rounded-xl font-medium text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors flex items-center justify-center gap-1.5 border border-slate-700/50"
+            >
+              <History className="w-3.5 h-3.5 text-indigo-400" />
+              <span>查看历史报告</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleResetToIdle}
+              className="py-2.5 px-3 rounded-xl font-medium text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors flex items-center justify-center gap-1.5 border border-slate-700/50"
+            >
+              <Play className="w-3.5 h-3.5 text-emerald-400 fill-current" />
+              <span>再练一场</span>
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="w-full py-2.5 px-4 rounded-xl font-medium text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 text-center block transition-colors"
+            className="w-full py-2 px-4 rounded-xl font-medium text-xs text-slate-400 hover:text-slate-200 text-center block transition-colors"
           >
             返回首页
           </button>
