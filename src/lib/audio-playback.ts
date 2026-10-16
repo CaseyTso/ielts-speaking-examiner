@@ -20,7 +20,7 @@ export class AudioPlaybackStreamer {
     this.options = options;
   }
 
-  private initContext(): AudioContext {
+  public initContext(): AudioContext {
     if (!this.audioContext || this.audioContext.state === 'closed') {
       const AudioContextClass =
         window.AudioContext ||
@@ -30,6 +30,18 @@ export class AudioPlaybackStreamer {
       });
     }
     return this.audioContext;
+  }
+
+  /**
+   * Initializes or returns the AudioContext and ensures it is resumed.
+   * Should be called within a user gesture (e.g., button click) to satisfy iOS Safari autoplay policy.
+   */
+  public async resumeContext(): Promise<AudioContext> {
+    const ctx = this.initContext();
+    if (ctx.state === 'suspended') {
+      await ctx.resume();
+    }
+    return ctx;
   }
 
   /**
@@ -87,7 +99,10 @@ export class AudioPlaybackStreamer {
       sourceNode.start(startTime);
       this.nextStartTime = startTime + audioBuffer.duration;
 
-      this.activeSources.push(sourceNode);
+      // Only push to activeSources if context is running to prevent leakage on suspended contexts
+      if (ctx.state === 'running') {
+        this.activeSources.push(sourceNode);
+      }
 
       if (!this.isPlaying) {
         this.isPlaying = true;

@@ -40,6 +40,7 @@ export class LiveClient {
   private connectPromiseResolve: (() => void) | null = null;
   private connectPromiseReject: ((err: Error) => void) | null = null;
   private setupCompleted = false;
+  private connectTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   constructor(callbacks: LiveClientCallbacks = {}, config: LiveClientConfig = {}) {
     this.callbacks = callbacks;
@@ -79,6 +80,11 @@ export class LiveClient {
       this.disconnect();
     }
 
+    if (this.connectTimeoutId) {
+      clearTimeout(this.connectTimeoutId);
+      this.connectTimeoutId = null;
+    }
+
     this.setState('connecting');
     this.setupCompleted = false;
 
@@ -100,11 +106,41 @@ export class LiveClient {
         return;
       }
 
-      this.ws.onopen = () => {
+      const ws = this.ws;
+
+      // 15s connection and setup timeout (P1-4)
+      this.connectTimeoutId = setTimeout(() => {
+        if (ws !== this.ws) return;
+        if (!this.setupCompleted && this.connectPromiseReject) {
+          const timeoutErr = new Error('Gemini Live API connection timed out (15s). Check network or proxy settings.');
+          try {
+            ws.onopen = null;
+            ws.onmessage = null;
+            ws.onerror = null;
+            ws.onclose = null;
+            ws.close();
+          } catch {
+            // ignore
+          }
+          if (this.ws === ws) {
+            this.ws = null;
+          }
+          this.setState('error');
+          this.callbacks.onError?.(timeoutErr);
+          const rej = this.connectPromiseReject;
+          this.connectPromiseReject = null;
+          this.connectPromiseResolve = null;
+          rej(timeoutErr);
+        }
+      }, 15000);
+
+      ws.onopen = () => {
+        if (ws !== this.ws) return;
         this.sendSetupMessage();
       };
 
-      this.ws.onmessage = async (event: MessageEvent) => {
+      ws.onmessage = async (event: MessageEvent) => {
+        if (ws !== this.ws) return;
         try {
           let text: string;
           if (typeof event.data === 'string') {
@@ -123,7 +159,12 @@ export class LiveClient {
         }
       };
 
-      this.ws.onerror = (event: Event) => {
+      ws.onerror = (event: Event) => {
+        if (ws !== this.ws) return;
+        if (this.connectTimeoutId) {
+          clearTimeout(this.connectTimeoutId);
+          this.connectTimeoutId = null;
+        }
         const error = new Error('WebSocket connection error: ' + (event.type || 'unknown'));
         console.error('[LiveClient] WebSocket error event:', event);
         if (!this.setupCompleted && this.connectPromiseReject) {
@@ -135,7 +176,12 @@ export class LiveClient {
         this.callbacks.onError?.(error);
       };
 
-      this.ws.onclose = (event: CloseEvent) => {
+      ws.onclose = (event: CloseEvent) => {
+        if (ws !== this.ws) return;
+        if (this.connectTimeoutId) {
+          clearTimeout(this.connectTimeoutId);
+          this.connectTimeoutId = null;
+        }
         const wasClean = event.wasClean;
         const code = event.code;
         const reason = event.reason || '';
@@ -200,6 +246,10 @@ export class LiveClient {
   private handleServerMessage(message: Record<string, unknown>): void {
     // 1. Setup complete
     if (message.setupComplete) {
+      if (this.connectTimeoutId) {
+        clearTimeout(this.connectTimeoutId);
+        this.connectTimeoutId = null;
+      }
       this.setupCompleted = true;
       this.setState('connected');
       if (this.connectPromiseResolve) {
@@ -347,8 +397,16 @@ export class LiveClient {
    * Disconnects the WebSocket session.
    */
   public disconnect(): void {
+    if (this.connectTimeoutId) {
+      clearTimeout(this.connectTimeoutId);
+      this.connectTimeoutId = null;
+    }
     if (this.ws) {
       try {
+        this.ws.onopen = null;
+        this.ws.onmessage = null;
+        this.ws.onerror = null;
+        this.ws.onclose = null;
         this.ws.close(1000, 'User ended session');
       } catch {
         // ignore

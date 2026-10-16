@@ -55,6 +55,7 @@ export const ExamPage: React.FC = () => {
     isMuted,
     micVolume,
     errorMessage,
+    isTransitioning,
     completedParts,
     currentPartTurns,
     progressDigest,
@@ -605,8 +606,9 @@ export const ExamPage: React.FC = () => {
           </div>
           <button
             type="button"
+            disabled={isTransitioning}
             onClick={() => nextPhase()}
-            className="px-2 py-1 rounded bg-rose-500/20 text-rose-300 text-[10px] font-medium shrink-0"
+            className="px-2 py-1 rounded bg-rose-500/20 text-rose-300 text-[10px] font-medium shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             跳过
           </button>
@@ -663,8 +665,9 @@ export const ExamPage: React.FC = () => {
               </p>
               <button
                 type="button"
+                disabled={isTransitioning}
                 onClick={skipPrep}
-                className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-medium text-xs whitespace-nowrap transition-colors flex items-center gap-1"
+                className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-medium text-xs whitespace-nowrap transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>准备好了，开讲</span>
                 <ArrowRight className="w-3 h-3" />
@@ -798,20 +801,22 @@ export const ExamPage: React.FC = () => {
             <span>{isMuted ? '取消静音' : '静音'}</span>
           </button>
 
-          {/* Phase progression button */}
-          <button
-            type="button"
-            onClick={() => nextPhase()}
-            className="flex-1 py-2.5 px-4 rounded-xl font-medium text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/30"
-          >
-            <span>
-              {examState === 'PART1' && '进入 Part 2 题卡准备'}
-              {examState === 'PART2_PREP' && '准备好了，开始独白'}
-              {examState === 'PART2_SPEAK' && '独白完毕，进入 Part 3'}
-              {examState === 'PART3' && '结束模考并归档'}
-            </span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          {/* Phase progression button (in PART2_PREP the action is on the cue card above) */}
+          {!isPart2Prep && (
+            <button
+              type="button"
+              disabled={isTransitioning}
+              onClick={() => nextPhase()}
+              className="flex-1 py-2.5 px-4 rounded-xl font-medium text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span>
+                {examState === 'PART1' && '进入 Part 2 题卡准备'}
+                {examState === 'PART2_SPEAK' && '独白完毕，进入 Part 3'}
+                {examState === 'PART3' && '结束模考并归档'}
+              </span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
     </div>

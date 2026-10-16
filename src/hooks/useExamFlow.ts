@@ -38,6 +38,7 @@ export interface UseExamFlowReturn {
   isMuted: boolean;
   micVolume: number;
   errorMessage: string | null;
+  isTransitioning: boolean;
   completedParts: ExamPartRecord[];
   currentPartTurns: ExamTurn[];
   progressDigest: string | null;
@@ -82,6 +83,9 @@ export function useExamFlow(): UseExamFlowReturn {
   const sessionStartTimeRef = useRef<number>(0);
 
   const timerIntervalRef = useRef<number | null>(null);
+  const deadlineRef = useRef<number | null>(null);
+  const transitioningRef = useRef<boolean>(false);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
   const liveClientRef = useRef<LiveClient | null>(null);
   const audioCaptureRef = useRef<AudioCapture | null>(null);
@@ -122,6 +126,8 @@ export function useExamFlow(): UseExamFlowReturn {
 
   // Stop current LiveClient WebSocket connection cleanly
   const disconnectLiveClient = useCallback(() => {
+    // P1-6: Interrupt audio immediately on disconnect to ensure silence in prep phase
+    playbackRef.current?.interrupt();
     if (liveClientRef.current) {
       try {
         liveClientRef.current.disconnect();
@@ -136,6 +142,7 @@ export function useExamFlow(): UseExamFlowReturn {
 
   // Completely tear down all audio and connection resources
   const teardownAll = useCallback(() => {
+    deadlineRef.current = null;
     clearTimer();
     disconnectLiveClient();
 
@@ -245,116 +252,133 @@ export function useExamFlow(): UseExamFlowReturn {
 
   // Transition to next phase forward
   const nextPhase = useCallback(async () => {
-    const currentState = examStateRef.current;
-    const currentPaper = paperRef.current;
-    const apiKey = apiKeyRef.current;
+    // P1-5: Prevent re-entrant state transitions
+    if (transitioningRef.current) return;
+    transitioningRef.current = true;
+    setIsTransitioning(true);
 
-    if (!currentPaper) return;
+    try {
+      const currentState = examStateRef.current;
+      const currentPaper = paperRef.current;
+      const apiKey = apiKeyRef.current;
 
-    if (currentState === 'PART1') {
-      // 1. Finalize Part 1
-      clearTimer();
-      const p1Record: ExamPartRecord = {
-        part: 1,
-        partTitle: 'Part 1: Introduction and Interview',
-        topicInfo: {
-          topics: currentPaper.part1Topics.map((t) => t.topic),
-        },
-        durationSeconds: Math.round((Date.now() - partStartTimeRef.current) / 1000),
-        startedAt: partStartTimeRef.current,
-        endedAt: Date.now(),
-        turns: [...currentPartTurnsRef.current],
-      };
+      if (!currentPaper) return;
 
-      const updatedCompleted = [...completedPartsRef.current, p1Record];
-      setCompletedParts(updatedCompleted);
-      setCurrentPartTurns([]);
-
-      // Disconnect Live session 1 during 60s prep
-      disconnectLiveClient();
-      if (audioCaptureRef.current) {
-        audioCaptureRef.current.setMuted(true);
-        setIsMuted(true);
-      }
-
-      // Move to PART2_PREP
-      setExamState('PART2_PREP');
-      setRemainingSeconds(EXAM_DURATIONS.PART2_PREP_SECONDS);
-      partStartTimeRef.current = Date.now();
-    } else if (currentState === 'PART2_PREP') {
-      // 2. Start PART2_SPEAK
-      clearTimer();
-      setExamState('PART2_SPEAK');
-      setRemainingSeconds(EXAM_DURATIONS.PART2_SPEAK_SECONDS);
-      setCurrentPartTurns([]);
-      partStartTimeRef.current = Date.now();
-
-      const part1Record = completedPartsRef.current.find((p) => p.part === 1);
-      const p2Instruction = buildPart2SystemInstruction(currentPaper.part2Card, part1Record);
-
-      await connectPartSession(apiKey, p2Instruction);
-    } else if (currentState === 'PART2_SPEAK') {
-      // 3. Finalize Part 2 & Start PART3
-      clearTimer();
-      const p2Record: ExamPartRecord = {
-        part: 2,
-        partTitle: 'Part 2: Individual Long Turn',
-        topicInfo: {
-          cueCard: {
-            id: currentPaper.part2Card.id,
-            title: currentPaper.part2Card.title,
-            cueCard: currentPaper.part2Card.cueCard,
+      if (currentState === 'PART1') {
+        // 1. Finalize Part 1
+        clearTimer();
+        const p1Record: ExamPartRecord = {
+          part: 1,
+          partTitle: 'Part 1: Introduction and Interview',
+          topicInfo: {
+            topics: currentPaper.part1Topics.map((t) => t.topic),
           },
-        },
-        durationSeconds: Math.round((Date.now() - partStartTimeRef.current) / 1000),
-        startedAt: partStartTimeRef.current,
-        endedAt: Date.now(),
-        turns: [...currentPartTurnsRef.current],
-      };
+          durationSeconds: Math.round((Date.now() - partStartTimeRef.current) / 1000),
+          startedAt: partStartTimeRef.current,
+          endedAt: Date.now(),
+          turns: [...currentPartTurnsRef.current],
+        };
 
-      const updatedCompleted = [...completedPartsRef.current, p2Record];
-      setCompletedParts(updatedCompleted);
-      setCurrentPartTurns([]);
+        const updatedCompleted = [...completedPartsRef.current, p1Record];
+        setCompletedParts(updatedCompleted);
+        setCurrentPartTurns([]);
 
-      // Move to PART3
-      setExamState('PART3');
-      setRemainingSeconds(EXAM_DURATIONS.PART3_SECONDS);
-      partStartTimeRef.current = Date.now();
+        // Disconnect Live session 1 during 60s prep
+        disconnectLiveClient();
+        if (audioCaptureRef.current) {
+          audioCaptureRef.current.setMuted(true);
+          setIsMuted(true);
+        }
 
-      const p3Instruction = buildPart3SystemInstruction(currentPaper.part2Card, updatedCompleted);
-      await connectPartSession(apiKey, p3Instruction);
-    } else if (currentState === 'PART3') {
-      // 4. Finalize Part 3 & Finish Exam
-      clearTimer();
-      const p3Record: ExamPartRecord = {
-        part: 3,
-        partTitle: 'Part 3: Two-way Discussion',
-        topicInfo: {
-          part3Theme: currentPaper.part2Card.topicCategory,
-        },
-        durationSeconds: Math.round((Date.now() - partStartTimeRef.current) / 1000),
-        startedAt: partStartTimeRef.current,
-        endedAt: Date.now(),
-        turns: [...currentPartTurnsRef.current],
-      };
+        // Move to PART2_PREP with wall-clock deadline
+        const limitMs = EXAM_DURATIONS.PART2_PREP_SECONDS * 1000;
+        deadlineRef.current = Date.now() + limitMs;
+        setExamState('PART2_PREP');
+        setRemainingSeconds(EXAM_DURATIONS.PART2_PREP_SECONDS);
+        partStartTimeRef.current = Date.now();
+      } else if (currentState === 'PART2_PREP') {
+        // 2. Start PART2_SPEAK with wall-clock deadline
+        clearTimer();
+        const limitMs = EXAM_DURATIONS.PART2_SPEAK_SECONDS * 1000;
+        deadlineRef.current = Date.now() + limitMs;
+        setExamState('PART2_SPEAK');
+        setRemainingSeconds(EXAM_DURATIONS.PART2_SPEAK_SECONDS);
+        setCurrentPartTurns([]);
+        partStartTimeRef.current = Date.now();
 
-      const finalCompleted = [...completedPartsRef.current, p3Record];
-      setCompletedParts(finalCompleted);
+        const part1Record = completedPartsRef.current.find((p) => p.part === 1);
+        const p2Instruction = buildPart2SystemInstruction(currentPaper.part2Card, part1Record);
 
-      // Save complete session record
-      const sessionRecord: ExamSessionRecord = {
-        id: `session-${sessionStartTimeRef.current}`,
-        startedAt: sessionStartTimeRef.current,
-        endedAt: Date.now(),
-        status: 'completed',
-        progressDigestUsed: getStoredProgressDigest(),
-        paper: currentPaper,
-        parts: finalCompleted,
-      };
-      saveLastSessionTranscript(sessionRecord);
+        await connectPartSession(apiKey, p2Instruction);
+      } else if (currentState === 'PART2_SPEAK') {
+        // 3. Finalize Part 2 & Start PART3
+        clearTimer();
+        const p2Record: ExamPartRecord = {
+          part: 2,
+          partTitle: 'Part 2: Individual Long Turn',
+          topicInfo: {
+            cueCard: {
+              id: currentPaper.part2Card.id,
+              title: currentPaper.part2Card.title,
+              cueCard: currentPaper.part2Card.cueCard,
+            },
+          },
+          durationSeconds: Math.round((Date.now() - partStartTimeRef.current) / 1000),
+          startedAt: partStartTimeRef.current,
+          endedAt: Date.now(),
+          turns: [...currentPartTurnsRef.current],
+        };
 
-      teardownAll();
-      setExamState('FINISHED');
+        const updatedCompleted = [...completedPartsRef.current, p2Record];
+        setCompletedParts(updatedCompleted);
+        setCurrentPartTurns([]);
+
+        // Move to PART3 with wall-clock deadline
+        const limitMs = EXAM_DURATIONS.PART3_SECONDS * 1000;
+        deadlineRef.current = Date.now() + limitMs;
+        setExamState('PART3');
+        setRemainingSeconds(EXAM_DURATIONS.PART3_SECONDS);
+        partStartTimeRef.current = Date.now();
+
+        const p3Instruction = buildPart3SystemInstruction(currentPaper.part2Card, updatedCompleted);
+        await connectPartSession(apiKey, p3Instruction);
+      } else if (currentState === 'PART3') {
+        // 4. Finalize Part 3 & Finish Exam
+        clearTimer();
+        deadlineRef.current = null;
+        const p3Record: ExamPartRecord = {
+          part: 3,
+          partTitle: 'Part 3: Two-way Discussion',
+          topicInfo: {
+            part3Theme: currentPaper.part2Card.topicCategory,
+          },
+          durationSeconds: Math.round((Date.now() - partStartTimeRef.current) / 1000),
+          startedAt: partStartTimeRef.current,
+          endedAt: Date.now(),
+          turns: [...currentPartTurnsRef.current],
+        };
+
+        const finalCompleted = [...completedPartsRef.current, p3Record];
+        setCompletedParts(finalCompleted);
+
+        // Save complete session record
+        const sessionRecord: ExamSessionRecord = {
+          id: `session-${sessionStartTimeRef.current}`,
+          startedAt: sessionStartTimeRef.current,
+          endedAt: Date.now(),
+          status: 'completed',
+          progressDigestUsed: getStoredProgressDigest(),
+          paper: currentPaper,
+          parts: finalCompleted,
+        };
+        saveLastSessionTranscript(sessionRecord);
+
+        teardownAll();
+        setExamState('FINISHED');
+      }
+    } finally {
+      transitioningRef.current = false;
+      setIsTransitioning(false);
     }
   }, [clearTimer, disconnectLiveClient, connectPartSession, teardownAll]);
 
@@ -362,6 +386,23 @@ export function useExamFlow(): UseExamFlowReturn {
   const startExam = useCallback(
     async (apiKey: string) => {
       teardownAll();
+
+      // P1-2: Initialize and resume AudioPlaybackStreamer directly within user gesture
+      const playback = new AudioPlaybackStreamer({
+        onPlayingStateChange: (playing) => {
+          setIsSpeaking(playing);
+        },
+        onError: (err) => {
+          console.error('[AudioPlayback] Error:', err);
+        },
+      });
+      playbackRef.current = playback;
+      try {
+        await playback.resumeContext();
+      } catch (err) {
+        console.warn('[AudioPlayback] Failed to resume AudioContext during user gesture:', err);
+      }
+
       apiKeyRef.current = apiKey.trim();
 
       const newPaper = getRandomExamPaper();
@@ -380,6 +421,9 @@ export function useExamFlow(): UseExamFlowReturn {
       sessionStartTimeRef.current = now;
       partStartTimeRef.current = now;
 
+      // P1-1: Wall-clock deadline for Part 1
+      const limitMs = EXAM_DURATIONS.PART1_SECONDS * 1000;
+      deadlineRef.current = now + limitMs;
       setExamState('PART1');
       setRemainingSeconds(EXAM_DURATIONS.PART1_SECONDS);
 
@@ -426,6 +470,8 @@ export function useExamFlow(): UseExamFlowReturn {
 
   // Reset back to idle
   const resetToIdle = useCallback(() => {
+    transitioningRef.current = false;
+    setIsTransitioning(false);
     teardownAll();
     setExamState('IDLE');
     setPaper(null);
@@ -434,7 +480,24 @@ export function useExamFlow(): UseExamFlowReturn {
     setErrorMessage(null);
   }, [teardownAll]);
 
-  // Timer tick effect: counts down seconds for active phases
+  // Timer tick & wall-clock deadline synchronization (P1-1)
+  const syncRemainingFromDeadline = useCallback(() => {
+    const deadline = deadlineRef.current;
+    if (!deadline) return;
+
+    const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+    setRemainingSeconds(remaining);
+
+    if (remaining <= 0) {
+      clearTimer();
+      deadlineRef.current = null;
+      window.setTimeout(() => {
+        void nextPhase();
+      }, 0);
+    }
+  }, [clearTimer, nextPhase]);
+
+  // Timer tick effect: uses wall-clock deadline and listens for visibilitychange
   useEffect(() => {
     const isCountingPhase =
       examState === 'PART1' ||
@@ -448,23 +511,24 @@ export function useExamFlow(): UseExamFlowReturn {
     }
 
     clearTimer();
+    syncRemainingFromDeadline();
+
     timerIntervalRef.current = window.setInterval(() => {
-      setRemainingSeconds((prev) => {
-        if (prev <= 1) {
-          // Timer finished -> auto advance phase
-          window.setTimeout(() => {
-            void nextPhase();
-          }, 0);
-          return 0;
-        }
-        return prev - 1;
-      });
+      syncRemainingFromDeadline();
     }, 1000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        syncRemainingFromDeadline();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       clearTimer();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [examState, nextPhase, clearTimer]);
+  }, [examState, clearTimer, syncRemainingFromDeadline]);
 
   // Overall cleanup on unmount
   useEffect(() => {
@@ -491,6 +555,7 @@ export function useExamFlow(): UseExamFlowReturn {
     isMuted,
     micVolume,
     errorMessage,
+    isTransitioning,
     completedParts,
     currentPartTurns,
     progressDigest,

@@ -304,8 +304,8 @@ async function runVerification() {
   // Verify Report content rules
   console.log('[STEP 3] Validating Report Output against Consensuses...');
 
-  // Check no scores
-  const scoreRegex = /\b(?:Band\s*[4-9](?:\.[05])?|Score:\s*\d|得分[：:]\s*\d|评级[：:]\s*\d|\b[56789]\.[05]\s*(?:分|分值))\b/i;
+  // Check no scores (P1-8: CJK compatible regex without outer word boundaries)
+  const scoreRegex = /(?:\bBand\s*[4-9](?:\.[05])?|\bScore[：:]\s*\d|得分[：:]\s*\d|评级[：:]\s*\d|(?:预计|预估|估计)\s*[4-9](?:\.[05])?|[4-9](?:\.[05])?\s*分(?!钟|秒))/i;
   const scoreMatch = report.markdown.match(scoreRegex);
   if (scoreMatch) {
     console.error(`[VIOLATION] Found forbidden score reference in report: "${scoreMatch[0]}"`);
@@ -313,23 +313,31 @@ async function runVerification() {
   }
   console.log('- No scores / band ratings detected in report: PASS');
 
-  // Check 4 official dimensions
+  // Check 4 official dimensions (P1-8: real assertion with failure exit)
   const hasFC = report.markdown.includes('Fluency') || report.markdown.includes('流利');
   const hasLR = report.markdown.includes('Lexical') || report.markdown.includes('词汇');
   const hasGRA = report.markdown.includes('Grammatical') || report.markdown.includes('语法');
   const hasPR = report.markdown.includes('Pronunciation') || report.markdown.includes('发音');
+  if (!hasFC || !hasLR || !hasGRA || !hasPR) {
+    console.error(`[VIOLATION] Missing official dimensions (FC: ${hasFC}, LR: ${hasLR}, GRA: ${hasGRA}, PR: ${hasPR})`);
+    process.exit(1);
+  }
   console.log(`- Official 4 dimensions present (FC: ${hasFC}, LR: ${hasLR}, GRA: ${hasGRA}, PR: ${hasPR}): PASS`);
 
   // Check pronunciation disclaimer
   const hasPRDisclaimer = report.markdown.includes('发音反馈基于转录文本推断') || report.markdown.includes('仅供参考');
   console.log(`- Pronunciation disclaimer present in generated report: ${hasPRDisclaimer ? 'PASS' : 'PASS (Noted)'}`);
 
-  // Check dual-layer structure elements
+  // Check dual-layer structure elements (P1-8: real assertion with failure exit)
   const hasLayer1 =
     report.markdown.includes('Part 1') &&
     report.markdown.includes('Part 2') &&
     report.markdown.includes('Part 3');
-  console.log(`- Dual-layer structure present in generated report: ${hasLayer1 ? 'PASS' : 'FAIL'}`);
+  if (!hasLayer1) {
+    console.error('[VIOLATION] Dual-layer structure missing: must include Part 1, Part 2, and Part 3');
+    process.exit(1);
+  }
+  console.log(`- Dual-layer structure present in generated report: PASS`);
 
   console.log('\n[STEP 4] Calling Gemini text model to generate Progress Digest...');
   const digestStartTime = Date.now();
