@@ -12,16 +12,24 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isHistory = location.pathname === '/history';
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex justify-center selection:bg-indigo-500/30 selection:text-indigo-200">
-      <div className="w-full max-w-md min-h-screen flex flex-col bg-slate-900 border-x border-slate-800 shadow-2xl relative">
+    <div className="min-h-screen bg-[#05070C] text-slate-100 flex justify-center selection:bg-ios-blue/30 selection:text-blue-100 relative overflow-x-hidden">
+      {/* Ambient light orbs — barely-there cool blue, Liquid Glass philosophy:
+          the glass itself is colorless; light gives it presence */}
+      <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[560px] h-[420px] rounded-full bg-[#0A84FF]/25 blur-[130px]" />
+        <div className="absolute top-2/3 -left-32 w-[360px] h-[360px] rounded-full bg-[#409CFF]/15 blur-[120px]" />
+        <div className="absolute -bottom-40 -right-24 w-[400px] h-[400px] rounded-full bg-[#64D2FF]/12 blur-[130px]" />
+      </div>
+
+      <div className="w-full max-w-md min-h-screen flex flex-col border-x border-white/[0.06] relative z-10">
         {/* Top Header */}
-        <header className="px-5 py-4 border-b border-slate-800/80 bg-slate-900/95 backdrop-blur sticky top-0 z-20 flex items-center justify-between">
+        <header className="px-5 py-4 glass-strong sticky top-0 z-20 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20 group-hover:bg-indigo-500 transition-colors">
+            <div className="w-8 h-8 rounded-xl bg-ios-blue flex items-center justify-center text-white font-bold shadow-lg shadow-ios-blue/40 group-hover:bg-ios-blue-bright transition-colors">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h1 className="font-semibold text-sm tracking-tight text-slate-100 group-hover:text-indigo-300 transition-colors">
+              <h1 className="font-semibold text-sm tracking-tight text-slate-100 group-hover:text-ios-blue-bright transition-colors">
                 ielts-speaking-examiner
               </h1>
               <p className="text-[11px] text-slate-400">AI 雅思考官口语模拟</p>
@@ -32,7 +40,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {!isHistory && (
               <Link
                 to="/history"
-                className="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+                className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
                 title="练习报告历史记录"
                 aria-label="历史记录"
               >
@@ -43,7 +51,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {!isSettings && (
               <Link
                 to="/settings"
-                className="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+                className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
                 title="设置 / BYOK"
                 aria-label="设置页面"
               >
@@ -59,7 +67,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </main>
 
         {/* Footer */}
-        <footer className="px-5 py-4 border-t border-slate-800/60 text-center text-xs text-slate-500">
+        <footer className="px-5 py-4 border-t border-white/[0.06] text-center text-xs text-slate-400">
           <p>纯静态架构 · 本地 BYOK 隐私安全 · 无服务端</p>
         </footer>
       </div>

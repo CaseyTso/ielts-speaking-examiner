@@ -149,7 +149,7 @@ export const ExamPage: React.FC = () => {
         <div className="space-y-5">
           {/* Header Badge */}
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-ios-blue/10 text-ios-blue-bright border border-ios-blue/20">
               <span>Exam Mode</span>
               <span>·</span>
               <span>全真雅思考官模拟</span>
@@ -166,14 +166,14 @@ export const ExamPage: React.FC = () => {
           <div className="space-y-2.5">
             <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">考试流程概览</h3>
             <div className="grid grid-cols-1 gap-2.5">
-              <div className="p-3 rounded-xl border border-slate-800 bg-slate-900/60 flex items-start gap-3">
-                <div className="w-6 h-6 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              <div className="p-3 rounded-[20px] glass-subtle flex items-start gap-3">
+                <div className="w-6 h-6 rounded-lg bg-ios-blue/25 text-ios-blue-bright font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   1
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-200">Part 1 · Introduction & Interview</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">约 4 分钟</span>
+                    <span className="text-xs font-semibold text-slate-100">Part 1 · Introduction & Interview</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono">约 4 分钟</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
                     身份核验与日常生活问答（2 个随机话题，如 Work, Hometown, Reading 等，4-6 个小题）。
@@ -181,14 +181,14 @@ export const ExamPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl border border-slate-800 bg-slate-900/60 flex items-start gap-3">
-                <div className="w-6 h-6 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              <div className="p-3 rounded-[20px] glass-subtle flex items-start gap-3">
+                <div className="w-6 h-6 rounded-lg bg-ios-blue/25 text-ios-blue-bright font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   2
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-200">Part 2 · Individual Long Turn</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">1m 准备 + 2m 独白</span>
+                    <span className="text-xs font-semibold text-slate-100">Part 2 · Individual Long Turn</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono">1m 准备 + 2m 独白</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
                     展示真实题卡（Cue Card），60 秒静音构思倒计时，随后进行 1-2 分钟个人连续陈述。
@@ -196,14 +196,14 @@ export const ExamPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl border border-slate-800 bg-slate-900/60 flex items-start gap-3">
-                <div className="w-6 h-6 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              <div className="p-3 rounded-[20px] glass-subtle flex items-start gap-3">
+                <div className="w-6 h-6 rounded-lg bg-ios-blue/25 text-ios-blue-bright font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   3
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-200">Part 3 · Two-way In-depth Discussion</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">约 4 分钟</span>
+                    <span className="text-xs font-semibold text-slate-100">Part 3 · Two-way In-depth Discussion</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono">约 4 分钟</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
                     围绕 Part 2 话题展开抽象、深入、思辨的双向学术讨论，考官将针对回答深入追问。
@@ -215,17 +215,17 @@ export const ExamPage: React.FC = () => {
 
           {/* Progress Digest Notice (if available) */}
           {progressDigest ? (
-            <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-indigo-200 text-xs flex items-start gap-2.5">
-              <Sparkles className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-[20px] bg-ios-blue/10 backdrop-blur-md border border-ios-blue/30 text-blue-50 text-xs flex items-start gap-2.5 shadow-lg shadow-ios-blue/[0.08]">
+              <Sparkles className="w-4 h-4 text-ios-blue-bright shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-indigo-300">已检测到历史进步摘要 (Progress Digest)</p>
-                <p className="text-[11px] text-indigo-200/80 mt-0.5 leading-relaxed">
+                <p className="font-semibold text-ios-blue-bright">已检测到历史进步摘要 (Progress Digest)</p>
+                <p className="text-[11px] text-ios-blue-bright/80 mt-0.5 leading-relaxed">
                   系统已读取您上次练习的薄弱项，考官将在本场模考中自适应关注相关考察维度。
                 </p>
               </div>
             </div>
           ) : (
-            <div className="p-3 rounded-xl bg-slate-900/40 border border-slate-800 text-slate-400 text-xs flex items-start gap-2.5">
+            <div className="p-3 rounded-[20px] glass-subtle text-slate-300 text-xs flex items-start gap-2.5">
               <HelpCircle className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
               <p className="text-[11px] text-slate-400 leading-relaxed">
                 完成本次完整模考后，系统将在 S3 自动沉淀您的表现并提炼进步摘要。
@@ -235,7 +235,7 @@ export const ExamPage: React.FC = () => {
 
           {/* API Key Status Notice */}
           {!hasApiKey && (
-            <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-xs flex items-start gap-2.5">
+            <div className="p-3 rounded-xl bg-amber-500/10 backdrop-blur-md border border-amber-400/30 text-amber-100 text-xs flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-amber-300">请先配置 Gemini API Key</p>
@@ -253,9 +253,9 @@ export const ExamPage: React.FC = () => {
             type="button"
             disabled={!hasApiKey}
             onClick={handleStart}
-            className={`w-full py-3.5 px-4 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-lg ${
+            className={`w-full py-3.5 px-4 rounded-full font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-lg ${
               hasApiKey
-                ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/30 cursor-pointer active:scale-[0.99]'
+                ? 'bg-ios-blue hover:bg-ios-blue-bright text-white shadow-ios-blue/30 cursor-pointer pressable'
                 : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
             }`}
           >
@@ -265,7 +265,7 @@ export const ExamPage: React.FC = () => {
 
           <Link
             to="/"
-            className="w-full py-2.5 px-4 rounded-xl font-medium text-xs text-slate-400 hover:text-slate-200 text-center block transition-colors"
+            className="w-full py-2.5 px-4 rounded-full font-medium text-xs text-slate-400 hover:text-slate-200 text-center block transition-colors"
           >
             返回首页
           </Link>
@@ -283,7 +283,7 @@ export const ExamPage: React.FC = () => {
         <div className="space-y-4">
           {/* Header Banner */}
           <div className="text-center space-y-1.5 pt-1">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-400/15 border border-emerald-400/30 text-emerald-300 flex items-center justify-center mx-auto backdrop-blur-md">
               <Award className="w-5 h-5" />
             </div>
             <h2 className="text-xl font-bold text-white">模考已顺利完成！</h2>
@@ -299,7 +299,7 @@ export const ExamPage: React.FC = () => {
               {completedParts.map((p) => (
                 <div
                   key={p.part}
-                  className="p-3 rounded-xl border border-slate-800 bg-slate-900/70 space-y-1.5"
+                  className="p-3 rounded-[20px] glass-subtle space-y-1.5"
                 >
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-semibold text-slate-200">
@@ -328,14 +328,15 @@ export const ExamPage: React.FC = () => {
           {currentReport ? (
             /* Report Rendered View */
             <div className="space-y-3 pt-1">
-              <div className="p-3.5 rounded-xl bg-gradient-to-br from-indigo-950/60 to-slate-900 border border-indigo-500/40 space-y-2">
+              <div className="p-3.5 rounded-[20px] glass space-y-2 relative overflow-hidden">
+                <div className="pointer-events-none absolute -top-12 -right-12 w-36 h-36 rounded-full bg-ios-blue/20 blur-3xl" aria-hidden="true" />
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-300">
-                    <Sparkles className="w-4 h-4 text-indigo-400" />
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-ios-blue-bright">
+                    <Sparkles className="w-4 h-4 text-ios-blue-bright" />
                     <span>雅思练习报告 (Practice Report) 已生成</span>
                   </div>
                   {currentReport.modelUsed && (
-                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
+                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300">
                       {currentReport.modelUsed}
                     </span>
                   )}
@@ -348,7 +349,7 @@ export const ExamPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => downloadMarkdownReport(currentReport)}
-                    className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium flex items-center gap-1 shrink-0 transition-colors shadow-sm"
+                    className="px-3 py-1 rounded-full bg-ios-blue hover:bg-ios-blue-bright text-white text-xs font-medium flex items-center gap-1 shrink-0 transition-colors shadow-sm"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>下载 .md</span>
@@ -356,7 +357,7 @@ export const ExamPage: React.FC = () => {
                 </div>
 
                 {digestUpdated && (
-                  <div className="pt-1 flex items-center gap-1.5 text-[11px] text-emerald-400 border-t border-indigo-500/20">
+                  <div className="pt-1 flex items-center gap-1.5 text-[11px] text-emerald-400 border-t border-ios-blue/20">
                     <Check className="w-3.5 h-3.5" />
                     <span>进步摘要 (Progress Digest) 已同步更新，供下一场练习注入</span>
                   </div>
@@ -364,19 +365,20 @@ export const ExamPage: React.FC = () => {
               </div>
 
               {/* Rendered Markdown Report Container */}
-              <div className="max-h-[380px] overflow-y-auto p-4 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-inner">
+              <div className="max-h-[380px] overflow-y-auto p-4 rounded-2xl glass">
                 <MarkdownView content={currentReport.markdown} />
               </div>
             </div>
           ) : (
             /* Report Generation Action Card */
-            <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-950/40 to-slate-900/80 border border-indigo-500/30 space-y-3 shadow-md">
+            <div className="p-4 rounded-2xl glass space-y-3 relative overflow-hidden">
+              <div className="pointer-events-none absolute -bottom-16 -left-12 w-44 h-44 rounded-full bg-ios-blue/10 blur-3xl" aria-hidden="true" />
               <div className="flex items-center justify-between">
-                <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-300">
-                  <Sparkles className="w-4 h-4 text-indigo-400" />
+                <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-ios-blue-bright">
+                  <Sparkles className="w-4 h-4 text-ios-blue-bright" />
                   <span>阶段 S3 · 雅思官方四维度练习报告</span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-ios-blue/20 text-ios-blue-bright font-medium">
                   不打分 · 纯反馈
                 </span>
               </div>
@@ -396,17 +398,17 @@ export const ExamPage: React.FC = () => {
                 type="button"
                 disabled={isGeneratingReport || !hasApiKey}
                 onClick={handleGenerateReport}
-                className={`w-full py-3 px-4 rounded-xl font-medium text-xs flex items-center justify-center gap-2 transition-all ${
+                className={`w-full py-3 px-4 rounded-full font-medium text-xs flex items-center justify-center gap-2 transition-all ${
                   isGeneratingReport
-                    ? 'bg-indigo-900/60 text-indigo-300 border border-indigo-500/30 cursor-wait'
+                    ? 'bg-ios-blue/20 text-ios-blue-bright border border-ios-blue/30 cursor-wait'
                     : hasApiKey
-                    ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 cursor-pointer active:scale-[0.99]'
+                    ? 'bg-ios-blue hover:bg-ios-blue-bright text-white shadow-md shadow-ios-blue/30 cursor-pointer pressable'
                     : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
                 }`}
               >
                 {isGeneratingReport ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin text-indigo-400" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-ios-blue-bright" />
                     <span>
                       {generatingModel
                         ? `正在调用 ${generatingModel} 生成练习报告...`
@@ -425,12 +427,12 @@ export const ExamPage: React.FC = () => {
         </div>
 
         {/* Actions Area */}
-        <div className="space-y-2 pt-2 border-t border-slate-800">
+        <div className="space-y-2 pt-2 border-t border-white/10">
           {currentReport && (
             <button
               type="button"
               onClick={() => downloadMarkdownReport(currentReport)}
-              className="w-full py-2.5 px-4 rounded-xl font-medium text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+              className="w-full py-2.5 px-4 rounded-full font-medium text-xs bg-ios-blue hover:bg-ios-blue-bright text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
               <span>下载本场 Markdown 练习报告</span>
@@ -441,18 +443,18 @@ export const ExamPage: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('/history')}
-              className="py-2.5 px-3 rounded-xl font-medium text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors flex items-center justify-center gap-1.5 border border-slate-700/50"
+              className="py-2.5 px-3 rounded-full font-medium text-xs bg-white/[0.08] hover:bg-white/[0.13] text-slate-100 transition-colors flex items-center justify-center gap-1.5 border border-white/10"
             >
-              <History className="w-3.5 h-3.5 text-indigo-400" />
+              <History className="w-3.5 h-3.5 text-ios-blue-bright" />
               <span>查看历史报告</span>
             </button>
 
             <button
               type="button"
               onClick={handleResetToIdle}
-              className="py-2.5 px-3 rounded-xl font-medium text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors flex items-center justify-center gap-1.5 border border-slate-700/50"
+              className="py-2.5 px-3 rounded-full font-medium text-xs bg-white/[0.08] hover:bg-white/[0.13] text-slate-100 transition-colors flex items-center justify-center gap-1.5 border border-white/10"
             >
-              <Play className="w-3.5 h-3.5 text-emerald-400 fill-current" />
+              <Play className="w-3.5 h-3.5 text-emerald-300 fill-current" />
               <span>再练一场</span>
             </button>
           </div>
@@ -460,7 +462,7 @@ export const ExamPage: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="w-full py-2 px-4 rounded-xl font-medium text-xs text-slate-400 hover:text-slate-200 text-center block transition-colors"
+            className="w-full py-2 px-4 rounded-full font-medium text-xs text-slate-400 hover:text-slate-200 text-center block transition-colors"
           >
             返回首页
           </button>
@@ -476,7 +478,7 @@ export const ExamPage: React.FC = () => {
     return (
       <div className="flex-1 flex flex-col justify-between space-y-6">
         <div className="space-y-4 pt-6 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-2xl bg-rose-400/15 border border-rose-400/30 text-rose-300 flex items-center justify-center mx-auto backdrop-blur-md">
             <PhoneOff className="w-6 h-6" />
           </div>
           <h2 className="text-xl font-bold text-white">模考已提前中止</h2>
@@ -489,14 +491,14 @@ export const ExamPage: React.FC = () => {
           <button
             type="button"
             onClick={resetToIdle}
-            className="w-full py-3 px-4 rounded-xl font-medium text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+            className="w-full py-3 px-4 rounded-full font-medium text-xs bg-ios-blue hover:bg-ios-blue-bright text-white transition-colors"
           >
             重新开始模考
           </button>
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="w-full py-2.5 px-4 rounded-xl font-medium text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+            className="w-full py-2.5 px-4 rounded-full font-medium text-xs bg-white/[0.08] hover:bg-white/[0.13] border border-white/10 text-slate-200 transition-colors"
           >
             返回首页
           </button>
@@ -515,11 +517,11 @@ export const ExamPage: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col justify-between space-y-3.5">
       {/* Top Header & Stage Status Bar */}
-      <div className="space-y-2 pb-2 border-b border-slate-800">
+      <div className="space-y-2 pb-2 border-b border-white/10">
         <div className="flex items-center justify-between">
           {/* Part Badge */}
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 font-bold text-xs border border-indigo-500/30">
+            <span className="px-2 py-0.5 rounded-md bg-ios-blue/20 text-ios-blue-bright font-bold text-xs border border-ios-blue/30">
               Part {currentPart}
             </span>
             <span className="text-xs font-semibold text-slate-200">
@@ -532,10 +534,10 @@ export const ExamPage: React.FC = () => {
 
           {/* Timer Display */}
           <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-mono text-xs font-bold transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-xs font-bold transition-colors ${
               isTimeLow
                 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse'
-                : 'bg-slate-800 text-slate-200 border border-slate-700'
+                : 'bg-white/10 text-slate-100 border border-white/15'
             }`}
           >
             <Timer className="w-3.5 h-3.5" />
@@ -599,7 +601,7 @@ export const ExamPage: React.FC = () => {
 
       {/* Error Alert Banner */}
       {errorMessage && (
-        <div className="p-2.5 rounded-xl bg-rose-950/60 border border-rose-500/40 text-rose-200 text-xs flex items-center justify-between gap-2 shadow-sm">
+        <div className="p-2.5 rounded-xl bg-rose-500/10 backdrop-blur-md border border-rose-400/30 text-rose-100 text-xs flex items-center justify-between gap-2 shadow-lg shadow-rose-950/30">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
             <p className="text-[11px] text-rose-200/90">{errorMessage}</p>
@@ -617,9 +619,9 @@ export const ExamPage: React.FC = () => {
 
       {/* Part 1 Topics Banner */}
       {examState === 'PART1' && paper && (
-        <div className="px-3 py-1.5 rounded-lg bg-slate-800/40 border border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-          <span className="text-slate-500 font-medium">考查话题：</span>
-          <span className="text-slate-300 truncate max-w-[240px]">
+        <div className="px-3.5 py-1.5 rounded-full glass-subtle text-[11px] text-slate-300 flex items-center justify-between">
+          <span className="text-slate-400 font-medium">考查话题：</span>
+          <span className="text-slate-100 truncate max-w-[240px]">
             {paper.part1Topics.map((t) => t.topic).join(' · ')}
           </span>
         </div>
@@ -629,7 +631,7 @@ export const ExamPage: React.FC = () => {
       {/* PART 2 CUE CARD DISPLAY (Active in PREP and SPEAK states) */}
       {/* ========================================================== */}
       {(isPart2Prep || isPart2Speak) && paper && (
-        <div className="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-500/30 shadow-md space-y-2">
+        <div className="p-3.5 rounded-2xl bg-amber-400/[0.08] backdrop-blur-md border border-amber-300/25 shadow-lg shadow-amber-950/30 space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <FileText className="w-4 h-4 text-amber-400" />
@@ -646,9 +648,9 @@ export const ExamPage: React.FC = () => {
             {paper.part2Card.title}
           </p>
 
-          <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-300 space-y-1 leading-relaxed">
-            <p className="font-medium text-slate-400">You should say:</p>
-            <ul className="list-disc list-inside space-y-0.5 text-slate-300 pl-1">
+          <div className="p-2.5 rounded-xl glass-subtle text-[11px] text-slate-200 space-y-1 leading-relaxed">
+            <p className="font-medium text-slate-300">You should say:</p>
+            <ul className="list-disc list-inside space-y-0.5 text-slate-200 pl-1">
               {paper.part2Card.bulletPoints.map((point, idx) => (
                 <li key={idx} className="leading-snug">
                   {point}
@@ -667,7 +669,7 @@ export const ExamPage: React.FC = () => {
                 type="button"
                 disabled={isTransitioning}
                 onClick={skipPrep}
-                className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-medium text-xs whitespace-nowrap transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3.5 py-1.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-medium text-xs whitespace-nowrap transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>准备好了，开讲</span>
                 <ArrowRight className="w-3 h-3" />
@@ -679,9 +681,9 @@ export const ExamPage: React.FC = () => {
 
       {/* Part 3 Theme Banner */}
       {examState === 'PART3' && paper && (
-        <div className="px-3 py-1.5 rounded-lg bg-indigo-950/40 border border-indigo-500/20 text-[11px] text-indigo-300 flex items-center justify-between">
-          <span className="text-indigo-400 font-medium">深度讨论领域：</span>
-          <span className="text-slate-200 truncate max-w-[240px]">
+        <div className="px-3.5 py-1.5 rounded-full bg-ios-blue/10 backdrop-blur-md border border-ios-blue/25 text-[11px] text-ios-blue-bright flex items-center justify-between">
+          <span className="text-ios-blue-bright font-medium">深度讨论领域：</span>
+          <span className="text-slate-100 truncate max-w-[240px]">
             {paper.part2Card.topicCategory} · 抽象议题
           </span>
         </div>
@@ -690,12 +692,12 @@ export const ExamPage: React.FC = () => {
       {/* ========================================================== */}
       {/* CONVERSATION TRANSCRIPT AREA */}
       {/* ========================================================== */}
-      <div className="flex-1 min-h-[220px] max-h-[380px] overflow-y-auto space-y-3 p-3 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur">
+      <div className="flex-1 min-h-[220px] max-h-[380px] overflow-y-auto space-y-3 p-3 rounded-2xl glass">
         {/* Completed Parts Divider Notices */}
         {completedParts.map((cp) => (
           <div
             key={cp.part}
-            className="flex items-center justify-center gap-2 py-1 text-[10px] text-slate-500 border-b border-slate-800/50"
+            className="flex items-center justify-center gap-2 py-1 text-[10px] text-slate-400 border-b border-white/10"
           >
             <CheckCircle2 className="w-3 h-3 text-emerald-500" />
             <span>Part {cp.part} 已结束并归档</span>
@@ -704,7 +706,7 @@ export const ExamPage: React.FC = () => {
 
         {currentPartTurns.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 space-y-2">
-            <Sparkles className="w-6 h-6 text-indigo-400/40" />
+            <Sparkles className="w-6 h-6 text-ios-blue/40" />
             <p className="text-xs text-slate-400">
               {isPart2Prep
                 ? '题卡准备中，麦克风已自动静音...'
@@ -725,7 +727,7 @@ export const ExamPage: React.FC = () => {
               }`}
             >
               {item.speaker === 'model' && (
-                <div className="w-6 h-6 rounded-lg bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-6 h-6 rounded-lg bg-ios-blue/30 border border-ios-blue/40 text-ios-blue-bright flex items-center justify-center shrink-0 mt-0.5">
                   <Bot className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -733,8 +735,8 @@ export const ExamPage: React.FC = () => {
               <div
                 className={`max-w-[84%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${
                   item.speaker === 'user'
-                    ? 'bg-indigo-600 text-white rounded-br-none shadow-md shadow-indigo-600/20'
-                    : 'bg-slate-800/95 text-slate-200 border border-slate-700/60 rounded-bl-none shadow-sm'
+                    ? 'bg-ios-blue text-white rounded-br-none shadow-md shadow-ios-blue/20'
+                    : 'glass-subtle text-slate-100 rounded-bl-none'
                 }`}
               >
                 <div className="flex items-center justify-between gap-3 text-[10px] opacity-70 mb-1">
@@ -746,7 +748,7 @@ export const ExamPage: React.FC = () => {
               </div>
 
               {item.speaker === 'user' && (
-                <div className="w-6 h-6 rounded-lg bg-slate-700 border border-slate-600 text-slate-200 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-6 h-6 rounded-lg glass-subtle text-slate-200 flex items-center justify-center shrink-0 mt-0.5">
                   <User className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -762,9 +764,9 @@ export const ExamPage: React.FC = () => {
       <div className="space-y-2 pt-1">
         {/* Speaking Status Pill */}
         <div className="flex items-center justify-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-slate-800/90 border border-slate-700/60">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs glass-subtle">
             {isSpeaking ? (
-              <span className="text-indigo-300 font-medium">考官发音中...</span>
+              <span className="text-ios-blue-bright font-medium">考官发音中...</span>
             ) : isRecording && !isMuted ? (
               <>
                 <span
@@ -791,10 +793,10 @@ export const ExamPage: React.FC = () => {
             type="button"
             disabled={isPart2Prep}
             onClick={toggleMute}
-            className={`px-3 py-2.5 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 transition-colors border ${
+            className={`px-3.5 py-2.5 rounded-full font-medium text-xs flex items-center justify-center gap-1.5 transition-colors border ${
               isMuted
-                ? 'bg-amber-600/20 border-amber-500/40 text-amber-300'
-                : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
+                ? 'bg-amber-500/15 border-amber-400/40 text-amber-200'
+                : 'bg-white/[0.07] border-white/15 text-slate-200 hover:bg-white/[0.12] hover:text-white'
             }`}
           >
             {isMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
@@ -807,7 +809,7 @@ export const ExamPage: React.FC = () => {
               type="button"
               disabled={isTransitioning}
               onClick={() => nextPhase()}
-              className="flex-1 py-2.5 px-4 rounded-xl font-medium text-xs bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-2.5 px-4 rounded-full font-medium text-xs bg-ios-blue hover:bg-ios-blue-bright text-white transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-ios-blue/30 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>
                 {examState === 'PART1' && '进入 Part 2 题卡准备'}

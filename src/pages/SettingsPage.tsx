@@ -91,13 +91,13 @@ export const SettingsPage: React.FC = () => {
         <div className="space-y-1">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-medium py-1 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-ios-blue-bright hover:text-ios-blue-bright font-medium py-1 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>返回首页</span>
           </Link>
           <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <KeyRound className="w-5 h-5 text-indigo-400" />
+            <KeyRound className="w-5 h-5 text-ios-blue-bright" />
             <span>BYOK 密钥设置</span>
           </h2>
           <p className="text-xs text-slate-400 leading-relaxed">
@@ -106,7 +106,7 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         {/* Current Key Status Card */}
-        <div className="p-4 rounded-xl border border-slate-800 bg-slate-800/40">
+        <div className="p-4 rounded-2xl glass">
           <div className="flex items-center justify-between text-xs mb-2">
             <span className="text-slate-400">当前存储状态</span>
             {savedKey ? (
@@ -120,7 +120,7 @@ export const SettingsPage: React.FC = () => {
               </span>
             )}
           </div>
-          <div className="flex items-center justify-between bg-slate-900/80 px-3 py-2.5 rounded-lg border border-slate-700/60 font-mono text-sm">
+          <div className="flex items-center justify-between glass-subtle px-3 py-2.5 rounded-lg font-mono text-sm">
             <span className={savedKey ? 'text-slate-200' : 'text-slate-500 italic text-xs'}>
               {savedKey ? maskApiKey(savedKey) : '暂无已保存的 Key'}
             </span>
@@ -153,7 +153,7 @@ export const SettingsPage: React.FC = () => {
                 placeholder="例如：AIzaSy..."
                 autoComplete="off"
                 spellCheck={false}
-                className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono transition-all"
+                className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-white/[0.06] backdrop-blur-md border border-white/15 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-ios-blue/60 focus:border-ios-blue/60 font-mono transition-all"
               />
               <button
                 type="button"
@@ -165,7 +165,7 @@ export const SettingsPage: React.FC = () => {
               </button>
             </div>
             <p className="text-[11px] text-slate-400">
-              保存在浏览器本地 localStorage，Key 标识为 <code className="text-slate-300 bg-slate-800 px-1 py-0.5 rounded">gemini_api_key</code>
+              保存在浏览器本地 localStorage，Key 标识为 <code className="text-slate-200 bg-white/10 px-1 py-0.5 rounded">gemini_api_key</code>
             </p>
           </div>
 
@@ -173,7 +173,7 @@ export const SettingsPage: React.FC = () => {
           <div className="grid grid-cols-2 gap-2.5">
             <button
               type="submit"
-              className="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-sm active:scale-[0.99]"
+              className="py-2.5 px-3 rounded-full bg-ios-blue hover:bg-ios-blue-bright text-white text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md pressable"
             >
               <Save className="w-3.5 h-3.5" />
               <span>保存到本地</span>
@@ -183,20 +183,20 @@ export const SettingsPage: React.FC = () => {
               type="button"
               onClick={handleTestConnection}
               disabled={isTesting || (!apiKeyInput.trim() && !savedKey.trim())}
-              className={`py-2.5 px-3 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border ${
+              className={`py-2.5 px-3 rounded-full text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border ${
                 isTesting || (!apiKeyInput.trim() && !savedKey.trim())
                   ? 'bg-slate-800/40 text-slate-500 border-slate-800 cursor-not-allowed'
-                  : 'bg-slate-800 hover:bg-slate-700/80 text-slate-200 border-slate-700 cursor-pointer active:scale-[0.99]'
+                  : 'bg-white/[0.08] hover:bg-white/[0.13] text-slate-100 border-white/10 cursor-pointer pressable'
               }`}
             >
               {isTesting ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-400" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-ios-blue-bright" />
                   <span>正在验证...</span>
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-ios-blue-bright" />
                   <span>测试连接</span>
                 </>
               )}
@@ -207,7 +207,7 @@ export const SettingsPage: React.FC = () => {
         {/* Save message prompt */}
         {saveMessage && (
           <div
-            className={`p-3 rounded-xl text-xs border ${
+            className={`p-3 rounded-[20px] text-xs border ${
               saveMessage.type === 'success'
                 ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/30'
                 : 'bg-slate-800 text-slate-300 border-slate-700'
@@ -220,7 +220,7 @@ export const SettingsPage: React.FC = () => {
         {/* Test Connection Result Box */}
         {testResult && (
           <div
-            className={`p-3.5 rounded-xl text-xs border space-y-1.5 ${
+            className={`p-3.5 rounded-[20px] text-xs border space-y-1.5 ${
               testResult.success
                 ? 'bg-emerald-950/50 text-emerald-200 border-emerald-500/40'
                 : 'bg-rose-950/50 text-rose-200 border-rose-500/40'
@@ -245,8 +245,8 @@ export const SettingsPage: React.FC = () => {
         )}
 
         {/* Key Application Guide (Required by spec) */}
-        <div className="p-4 rounded-xl border border-indigo-950 bg-indigo-950/20 space-y-2.5">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-300">
+        <div className="p-4 rounded-2xl bg-ios-blue/[0.08] backdrop-blur-md border border-ios-blue/25 space-y-2.5">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-ios-blue-bright">
             <HelpCircle className="w-4 h-4" />
             <span>如何获取免费 Gemini API Key？</span>
           </div>
@@ -257,7 +257,7 @@ export const SettingsPage: React.FC = () => {
             href="https://aistudio.google.com/apikey"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 underline font-medium pt-1"
+            className="inline-flex items-center gap-1.5 text-xs text-ios-blue-bright hover:text-ios-blue-bright underline font-medium pt-1"
           >
             <span>去 aistudio.google.com/apikey 申请免费 key</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -266,8 +266,8 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Security note */}
-      <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-start gap-2.5 text-xs text-slate-400">
-        <Shield className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+      <div className="p-3.5 rounded-[20px] glass-subtle flex items-start gap-2.5 text-xs text-slate-300">
+        <Shield className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
         <p className="leading-relaxed">
           安全声明：本产品为纯静态单页应用，API Key 仅保存在你的浏览器本地。任何音频对话流量直接与 Google 端点通信，绝无第三方服务器。
         </p>
